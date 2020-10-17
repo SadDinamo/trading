@@ -41,6 +41,9 @@ class Tinkoffinvest extends Model {
         SELF::$client->sbRemove();
     }
 
+    /**
+     * Залогиниться в клинете песочницы
+     */
     public function startSandboxClient()
     {
         if (SELF::$client) { } else {
@@ -49,6 +52,9 @@ class Tinkoffinvest extends Model {
         }
     }
 
+    /**
+     * Залогиниться в реальном клиенте
+     */
     public function startRealClient()
     {
         if (SELF::$client) { } else {
@@ -124,6 +130,13 @@ class Tinkoffinvest extends Model {
         return $currencies;
     }
 
+    /**
+     * Запись массива тикеров в таблицу tks_invest_tickers
+     */
+    public function insertTickersToDb ($tickers) {
+        //TODO:: Запись массива тикеров в таблицу tks_invest_tickers
+    }
+
     public function getHistoryOrderBook ($figi,$depth) {
         $book = SELF::$client->getHistoryOrderBook($figi,$depth);
         return $book;
@@ -142,32 +155,10 @@ class Tinkoffinvest extends Model {
         return $accounts;
     }
 
-    /**
-     * 
-     * if $account === null, used default Tinkoff account
-     * 
-     */
     public function getTksPortfolio () {
-        $port = SELF::$client->getPortfolio(TIAccount::$account = null);
-        return $port;
+        $portfolio = SELF::$client->getPortfolio();
+        return $portfolio;
     }
 
-    /**
-     * 
-     * $currency = TICurrencyEnum::RUB
-     * 
-     */
-    public function getTksPortfolioBalance ( $port = getTksPortfolio(), $currency) {
-        $portfolioBalance = $port->getCurrencyBalance($currency);
-        return $portfolioBalance;
-    }
-
-    /**
-     * 
-     * 
-     */
-    public function getTksInstrumentLots ($port = getTksPortfolio(), $ticker) {
-        $port->getintrumentLots($ticker);
-    }
 
 }
