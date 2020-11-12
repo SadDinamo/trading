@@ -23,10 +23,16 @@ class m201014_105411_create_tks_preferencies_table extends Migration
 
         $this->insert( '{{%tks_preferencies}}', [
             'PreferenceName' => 'SandBoxToken',
+            'Value' => 't.K0KeSoTVc_pQQYN-4vH-s1Pzt4efB1H4rDia2cKqU0cf8fsC9aCI0k3eOLaQX4sj8mPFouVJK3V4HmQvigR27w',
         ]);
 
         $this->insert('{{%tks_preferencies}}', [
             'PreferenceName' => 'Token',
+        ]);
+
+        $this->insert('{{%tks_preferencies}}', [
+            'PreferenceName' => 'ClientType',
+            'Value' => 'Sandbox',
         ]);
 
     }

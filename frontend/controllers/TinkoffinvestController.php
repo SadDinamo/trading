@@ -15,7 +15,7 @@ class TinkoffinvestController extends Controller
   public $client;
 
   public function actionAllmarketstocks () {
-      Tinkoffinvest::startSandboxClient();
+      Tinkoffinvest::startClient();
       $filterModel = new \jamesRUS52\TinkoffInvest\TIInstrument('','','','','','','','');
       $stocks = Tinkoffinvest::getTksStocks($this->client);
       $results = array();
@@ -43,7 +43,7 @@ class TinkoffinvestController extends Controller
           ],
         ],
       ]);
-      Tinkoffinvest::sandboxClientUnregister();
+      Tinkoffinvest::ClientUnregister();
       return $this->render('allmarketstocks', [
           'dataProvider' => $dataProvider,
           'filterModel' => $filterModel,
@@ -53,35 +53,35 @@ class TinkoffinvestController extends Controller
   // Получение массива торгуемых акций
   public function actionStocks()
   {
-    Tinkoffinvest::startSandboxClient();
+    Tinkoffinvest::StartClient();
     $stocks = Tinkoffinvest::getTksStocks($this->client);
-    Tinkoffinvest::sandboxClientUnregister();
+    Tinkoffinvest::ClientUnregister();
     return $this->render('stocks', ['stocks'=>$stocks]);
   }
 
   // Получение массива торгуемых облигаций
   public function actionBonds () {
-    Tinkoffinvest::startSandboxClient();
+    Tinkoffinvest::StartClient();
     $bonds = Tinkoffinvest::getTksBonds($this->client);
-    Tinkoffinvest::sandboxClientUnregister();
+    Tinkoffinvest::ClientUnregister();
     return $this->render('bonds', ['bonds'=>$bonds]);
   }
 
   // Получение массива торгуемых ETF
   public function actionEtfs()
   {
-    Tinkoffinvest::startSandboxClient();
+    Tinkoffinvest::StartClient();
     $etfs = Tinkoffinvest::getTksEtfs($this->client);
-    Tinkoffinvest::sandboxClientUnregister();
+    Tinkoffinvest::ClientUnregister();
     return $this->render('etfs', ['etfs' => $etfs]);
   }
 
   // Получение массива торгуемых валют
   public function actionCurrencies()
   {
-    Tinkoffinvest::startSandboxClient();
+    Tinkoffinvest::StartClient();
     $currencies = Tinkoffinvest::getTksCurrencies($this->client);
-    Tinkoffinvest::sandboxClientUnregister();
+    Tinkoffinvest::ClientUnregister();
     return $this->render('currencies', ['currencies' => $currencies]);
   }
 
@@ -176,7 +176,7 @@ class TinkoffinvestController extends Controller
 
 
   public function actionAccounts () {
-    Tinkoffinvest::startSandboxClient();
+    Tinkoffinvest::StartClient();
     $accounts = Tinkoffinvest::getTksAccounts();
     return $this->render('accounts', ['a' => $accounts]);
   }
@@ -184,7 +184,7 @@ class TinkoffinvestController extends Controller
 
   public function actionPortfolio()
   {
-    Tinkoffinvest::startSandboxClient();
+    Tinkoffinvest::StartClient();
     $portfolio = Tinkoffinvest::getTksPortfolio();
     return $this->render('portfolio', ['p' => $portfolio]);
   }

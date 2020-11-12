@@ -87,7 +87,8 @@ class TkspreferenciesController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ID]);
+            //return $this->redirect(['view', 'id' => $model->ID]);
+            return $this->redirect(['index']);
         }
 
         return $this->render('update', [
@@ -105,7 +106,6 @@ class TkspreferenciesController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 
@@ -125,12 +125,13 @@ class TkspreferenciesController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function getSandBoxToken () {
-        return TksPreferencies::findByPreferenceName('SandBoxToken')->Value;
-    }
-
     public function getToken()
     {
-        return TksPreferencies::findByPreferenceName('Token')->Value;
+        switch (TksPreferencies::findByPreferenceName('ClientType')->Value) {
+            case 'Sandbox': return TksPreferencies::findByPreferenceName('SandboxToken')->Value;
+            break;
+            case 'Real': return TksPreferencies::findByPreferenceName('Token')->Value;
+            break;
+        };
     }
 }

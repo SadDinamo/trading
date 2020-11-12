@@ -31,12 +31,12 @@ class Tinkoffinvest extends Model {
 
     static $client;
 
-    private function sandboxClientRegister()
+    private function ClientRegister()
     {
         SELF::$client->sbRegister();
     }
 
-    public function sandboxClientUnregister()
+    public function ClientUnregister()
     {
         SELF::$client->sbRemove();
     }
@@ -44,23 +44,19 @@ class Tinkoffinvest extends Model {
     /**
      * Залогиниться в клинете песочницы
      */
-    public function startSandboxClient()
+    public function startClient()
     {
+        // SANDBOX environment
         if (SELF::$client) { } else {
-            SELF::$client = new TIClient(TkspreferenciesController::getSandBoxToken(), TISiteEnum::SANDBOX);
+            SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::SANDBOX);
             SELF::$client->sbRegister();
         }
-    }
 
-    /**
-     * Залогиниться в реальном клиенте
-     */
-    public function startRealClient()
-    {
-        if (SELF::$client) { } else {
-            SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::EXCHANGE);
-            SELF::$client->sbRegister();
-        }
+        // REAL environment
+        // if (SELF::$client) { } else {
+        //     SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::EXCHANGE);
+        //     SELF::$client->sbRegister();
+        // }
     }
 
     /**
