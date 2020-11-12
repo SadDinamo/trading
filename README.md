@@ -12,8 +12,13 @@
 <li><a href="https://github.com/jamesRUS52/tinkoff-invest" target="_blank">SDK PHP на GitHub</a></li>
 </ul>
 
-<p>Установка:</p>
+Установка:
 <ul>
 <li>"composer install"</li>
 <li>создать базу "tks_invest" и в директории проекта "yii migrate"</li>
+</ul>
+
+Контакты:
+<ul>
+<li><a href="https://vk.com/saddinamo" traget="_blank">ВКонтакте</a></li>
 </ul>
