@@ -31,6 +31,8 @@ class ParserController extends Controller
         ]);
     }
 
+
+    
     /**
      * Получает двухуровневый массив с покупками инсайдеров (костыльненько)
      * 

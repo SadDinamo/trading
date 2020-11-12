@@ -1,8 +1,10 @@
 <?php
 
-// Это костыль !!! Парсинг страницы с покупками инсайдеров с FINWIZ
+// Это костыль !!! 
 
 // Var_dump($Deals);
+echo '<pre>';
 Var_dump($MarginTickers);
+echo '<\pre>';
 
 ?>
