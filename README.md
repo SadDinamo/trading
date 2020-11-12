@@ -6,11 +6,10 @@
     <br>
 </p>
 
-Исходники:
-Справка по API: <a href="https://tinkoffcreditsystems.github.io/invest-openapi/" traget="_blank"></a>
-SDK PHP на GitHub: <a href="https://github.com/jamesRUS52/tinkoff-invest" target="_blank"></a>
+<p>Исходники:</p>
+<a href="https://tinkoffcreditsystems.github.io/invest-openapi/" traget="_blank">Справка по API</a>
+<a href="https://github.com/jamesRUS52/tinkoff-invest" target="_blank">SDK PHP на GitHub</a>
 
-Установка:
-"composer install"
-+ создать базу "tks_invest" и в директории проекта
-"yii migrate"
+<p>Установка:</p>
+<p>"composer install"</p>
+<P>создать базу "tks_invest" и в директории проекта "yii migrate"</p>
