@@ -15,6 +15,7 @@ use \jamesRUS52\TinkoffInvest\TICandleIntervalEnum;
 use \jamesRUS52\TinkoffInvest\TICandle;
 use \jamesRUS52\TinkoffInvest\TIOrderBook;
 use \jamesRUS52\TinkoffInvest\TIInstrumentInfo;
+use common\models\TksPreferencies;
 
 use frontend\controllers\TkspreferenciesController;
 
@@ -33,12 +34,24 @@ class Tinkoffinvest extends Model {
 
     private function ClientRegister()
     {
-        SELF::$client->sbRegister();
+        switch (TksPreferencies::findByPreferenceName('ClientType')->Value) {
+            case 'Sandbox':
+                SELF::$client->sbRegister();
+                break;
+            case 'Real':
+                break;
+        }        
     }
 
     public function ClientUnregister()
     {
-        SELF::$client->sbRemove();
+        switch (TksPreferencies::findByPreferenceName('ClientType')->Value) {
+            case 'Sandbox':
+                SELF::$client->sbRemove();
+                break;
+            case 'Real':
+                break;
+        } 
     }
 
     /**
@@ -46,17 +59,20 @@ class Tinkoffinvest extends Model {
      */
     public function startClient()
     {
-        // SANDBOX environment
-        if (SELF::$client) { } else {
-            SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::SANDBOX);
-            SELF::$client->sbRegister();
-        }
-
-        // REAL environment
-        // if (SELF::$client) { } else {
-        //     SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::EXCHANGE);
-        //     SELF::$client->sbRegister();
-        // }
+        switch (TksPreferencies::findByPreferenceName('ClientType')->Value) {
+            case 'Sandbox':
+                if (SELF::$client) { } else {
+                    SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::SANDBOX);
+                    SELF::ClientRegister();
+                }
+            break;
+            case 'Real':
+                if (SELF::$client) { } else {
+                    SELF::$client = new TIClient(TkspreferenciesController::getToken(), TISiteEnum::EXCHANGE);
+                    SELF::ClientRegister();
+                }
+            break;
+        };
     }
 
     /**

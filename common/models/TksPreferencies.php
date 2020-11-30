@@ -52,6 +52,6 @@ class TksPreferencies extends \yii\db\ActiveRecord
         if (($Preference = SELF::find()->where(['PreferenceName' => $PreferenceName])->one()) !== null) {
             return $Preference;
         }
-        throw new NotFoundHttpException('В базе нет свойства '. $PreferenceName);
+        throw new NotFoundHttpException( 'Ошибка объекта БД - свойства '. $PreferenceName);
     }
 }

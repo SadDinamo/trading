@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model common\models\TksPreferencies */
 
-$this->title = 'Update Tks Preferencies: ' . $model->ID;
+$this->title = 'Update ' . $model->PreferenceName;
 $this->params['breadcrumbs'][] = ['label' => 'Tks Preferencies', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->ID, 'url' => ['view', 'id' => $model->ID]];
 $this->params['breadcrumbs'][] = 'Update';
