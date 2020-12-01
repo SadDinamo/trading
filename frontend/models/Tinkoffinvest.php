@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\models;
+
 use yii\base\Model;
 
 use \jamesRUS52\TinkoffInvest\TIClient;
@@ -15,9 +16,10 @@ use \jamesRUS52\TinkoffInvest\TICandleIntervalEnum;
 use \jamesRUS52\TinkoffInvest\TICandle;
 use \jamesRUS52\TinkoffInvest\TIOrderBook;
 use \jamesRUS52\TinkoffInvest\TIInstrumentInfo;
-use common\models\TksPreferencies;
 
+use common\models\TksPreferencies;
 use frontend\controllers\TkspreferenciesController;
+
 
 /**
  * 
@@ -140,13 +142,6 @@ class Tinkoffinvest extends Model {
     public function getTksCurrencies() {
         $currencies = SELF::$client->getCurrencies();
         return $currencies;
-    }
-
-    /**
-     * Запись массива тикеров в таблицу tks_invest_tickers
-     */
-    public function insertTickersToDb ($tickers) {
-        //TODO:: Запись массива тикеров в таблицу tks_invest_tickers
     }
 
     public function getHistoryOrderBook ($figi,$depth) {

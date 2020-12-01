@@ -8,6 +8,7 @@ use app\models\TksInvestTickersSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use frontend\models\Tinkoffinvest;
 
 /**
  * TksinvesttickersController implements the CRUD actions for TksInvestTickers model.
@@ -105,7 +106,6 @@ class TksinvesttickersController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 
@@ -121,7 +121,43 @@ class TksinvesttickersController extends Controller
         if (($model = TksInvestTickers::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    /**
+     * Запись массива тикеров в таблицу tks_invest_tickers
+     */
+    public function actionTickerstodb()
+    {
+        Tinkoffinvest::StartClient();
+        $stocks = Tinkoffinvest::getTksStocks();
+        $bonds = Tinkoffinvest::getTksBonds();
+        $etfs = Tinkoffinvest::getTksEtfs();
+        $currencies = Tinkoffinvest::getTksCurrencies();
+        $tickers = array_merge($stocks, $bonds, $etfs, $currencies);
+        Tinkoffinvest::ClientUnregister();
+        foreach ($tickers as $ticker) {
+            if (TksInvestTickers::find()->where(['figi' => $ticker->getFigi()])->one()) { } else {
+                $TksInvestTicker = new TksInvestTickers();
+                $TksInvestTicker->figi = $ticker->getFigi();
+                $TksInvestTicker->ticker = $ticker->getTicker();
+                $TksInvestTicker->isin = $ticker->getIsin();
+                $TksInvestTicker->minPriceIncrement = $ticker->getMinPriceIncrement();
+                $TksInvestTicker->lot = $ticker->getLot();
+                $TksInvestTicker->currency = $ticker->getCurrency();
+                $TksInvestTicker->name = $ticker->getName();
+                $TksInvestTicker->type = $ticker->getType();
+                $TksInvestTicker->active = 1;
+                $tempDate = date('Y-m-d H:i:s', getdate()['0']);
+                $TksInvestTicker->creationDate = $tempDate;
+                $TksInvestTicker->updateDate = $tempDate;
+                $TksInvestTicker->save();
+            }
+        };
+
+        Yii::$app->session->setFlash('success', 'Список тикеров обновлен');
+
+        return $this->redirect(['index']);
+    }
+
 }

@@ -47,6 +47,8 @@ class TksInvestTickersSearch extends TksInvestTickers
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => ['defaultOrder' => ['creationDate'=>SORT_DESC]],
+            'pagination' => ['PageSize' => 14],
         ]);
 
         $this->load($params);

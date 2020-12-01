@@ -24,8 +24,8 @@ class m200826_075539_create_tickers_table extends Migration
             'name' => $this->string(),
             'type' => $this->string(),
             'active'=> $this->boolean()->defaultValue(TRUE),
-            'creationDate'=>$this->dateTime()->notNull(),
-            'updateDate'=>$this->dateTime()->notNull(),
+            'creationDate'=>$this->dateTime()->Null(),
+            'updateDate'=>$this->dateTime()->Null(),
         ]);
 
         $this->createIndex(

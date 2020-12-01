@@ -5,8 +5,6 @@ use yii\web\Controller;
 use yii\data\ArrayDataProvider;
 use frontend\models\Tinkoffinvest;
 
-
-
 /**
  * Контроллер для модели API части
  */
@@ -182,12 +180,12 @@ class TinkoffinvestController extends Controller
   }
 
 
-  public function actionPortfolio()
-  {
+  public function actionPortfolio() {
     Tinkoffinvest::StartClient();
     $portfolio = Tinkoffinvest::getTksPortfolio();
     return $this->render('portfolio', ['p' => $portfolio]);
   }
+
 
 
 }
