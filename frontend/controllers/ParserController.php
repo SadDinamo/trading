@@ -4,13 +4,18 @@ namespace frontend\controllers;
 use yii\httpclient\client;
 use yii\web\Controller;
 
+/**
+ * Класс для парсинга страничек HTML
+ * 
+ * @author SadDinamo
+ */
 class ParserController extends Controller
 {
     public $client;
 
     /**
-     * Получает HTML страницы с покупками инсайдеров с FINWIZ.COM
-     * 
+     * Получает HTML страницы по ссылке
+     * @return String
      */
     private function GetHtmlContentByLink ($link) {
         $client = new client (['baseUrl' => $link]);
@@ -18,21 +23,6 @@ class ParserController extends Controller
         return $response->content;
     }
 
-    /**
-     * Вывод View экшна test
-     * 
-     */
-    public function actionTest () {
-        $InsiderBuyDeals = $this->GetInsiderBuyHistoryArray();
-        $MarginTickers = $this->GetMarginSharesArray();
-        return $this->render('test', [
-            'Deals' => $InsiderBuyDeals,
-            'MarginTickers' => $MarginTickers,
-        ]);
-    }
-
-
-    
     /**
      * Получает двухуровневый массив с покупками инсайдеров (костыльненько)
      * 
@@ -121,6 +111,10 @@ class ParserController extends Controller
         return ($dealsArray);
     }
 
+    /**
+     * Получение многомерного массива тикеров маржинальной торговли
+     * @return Array
+     */
     public function GetMarginSharesArray () {
         $html = $this->GetHtmlContentByLink('https://www.tinkoff.ru/invest/margin/equities/');
         $cd = 'UTF-8';
@@ -209,5 +203,97 @@ class ParserController extends Controller
             }
         }
         return ($tickersArray);
+    }
+
+    /**
+     * Var_dump отчет с многомерным массивом тикеров маржинальной торговли
+     */
+    public function actionMarginsharesarray () {
+        $MarginSharesArray = SELF::GetMarginSharesArray();
+        return $this->render('marginshares', ['a' => $MarginSharesArray]);
+    }
+
+    /**
+     * Вовращает первую строку между массивом начальных строк и конечной строкой (регистронезависимо)
+     * 
+     * @param string $content Строка, в которой производится поиск
+     * @param array $beginString Строка, после которой начинается искомая строка
+     * @param string $endString Строка, начиная с которой закансивается искомая строка
+     * 
+     * @return string
+     */
+    private function HtmlGetString($content, $beginString, $endString) {
+        $cd = 'UTF-8';
+        $pos = mb_stripos($content, $beginString[0], 0, $cd);
+        if ($pos) {
+            foreach ($beginString as $aString) {
+                $pos = mb_stripos($content, $aString, 0, $cd);
+                $content = mb_substr($content, $pos + mb_strlen($aString, $cd), NULL, $cd);
+            }
+            $pos = mb_stripos($content, $endString, 0, $cd);
+            if ($pos) {
+                $content = mb_substr($content, 0, $pos, $cd);
+                return $content;
+            }
+            return ('No string found');
+        }
+        return ('No string found');
+    }
+
+    /**
+     * Возвращает массив с данными по тикеру с сайта Yahoo.finance
+     * 
+     * @param string $ticker Тикер, для которого будет возвращен массив с данными
+     * 
+     * @return array
+     */
+    private function yahooTickerInfo($ticker) {
+        $result = array();
+        $result['Ticker'] = $ticker;
+        $content = $this->GetHtmlContentByLink('https://finance.yahoo.com/quote/'.$ticker.'/key-statistics?p='.$ticker);
+        // Fiscal Year Ends
+            $beginString = array('Fiscal Year Ends</span>', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Fiscal Year Ends'] = date('Y-m-d H:i:s', strtotime($this->HtmlGetString($content, $beginString, $endString)));
+        // Most Recent Quarter (mrq)
+            $beginString = array('Most Recent Quarter</span>', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Most Recent Quarter (mrq)'] = date('Y-m-d H:i:s', strtotime($this->HtmlGetString($content, $beginString, $endString)));
+        // Total Cash (mrq)
+            $beginString = array('Total Cash</span>', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Total Cash (mrq)'] = array('value' => $this->HtmlGetString($content, $beginString, $endString), 'date' => $result['Most Recent Quarter (mrq)']);
+        // Total Debt (mrq)
+            $beginString = array('Total debt</span>', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Total Debt (mrq)'] = array('value' => $this->HtmlGetString($content, $beginString, $endString), 'date' => $result['Most Recent Quarter (mrq)']);
+        // Short Ratio
+            $beginString = array('Short Ratio (');
+            $endString = ')';
+            $date = date('Y-m-d H:i:s', strtotime($this->HtmlGetString($content, $beginString, $endString)));
+            $beginString = array('Short Ratio ', 'data - reactid = "', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Short Ratio'] = array('value' => $this->HtmlGetString($content, $beginString, $endString), 'date'=>$date);
+        // Short % of Float
+            $beginString = array('Short % of Float (');
+            $endString = ')';
+            $date = date('Y-m-d H:i:s', strtotime($this->HtmlGetString($content, $beginString, $endString)));
+            $beginString = array('Short % of Float ', 'data - reactid = "', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Short % of Float'] = array('value' => $this->HtmlGetString($content, $beginString, $endString), 'date' => $date);
+        // Operating Cash Flow (Trailing Twelve Months)
+            $beginString = array('Operating Cash Flow', 'data-reactid="', 'data-reactid="', '">');
+            $endString = '</td></tr>';
+            $result['Operating Cash Flow (Trailing Twelve Months)'] = array('value' => $this->HtmlGetString($content, $beginString, $endString), 'date' => date('Y-m-d H:i:s', strtotime('today')));
+        return $result;
+    }
+
+    /**
+     * Var_dump отчет с информацией по тикеру с yahoo.finance
+     * 
+     */
+    public function actionYahootickerinfo($ticker = 'FIZZ'){
+        $a = $this-> yahooTickerInfo($ticker);
+        return $this->render('yahootickerinfo', ['a' => $a]);
     }
 }

@@ -33,6 +33,12 @@ class m200826_075539_create_tickers_table extends Migration
             '{{%tks_invest_tickers}}', //имя таблицы
             ['ticker'], //колонки индекса
         );
+
+        $this->createIndex(
+            'isinIndex', //имя индекса
+            '{{%tks_invest_tickers}}', //имя таблицы
+            ['isin'], //колонки индекса
+        );
     }
 
     /**

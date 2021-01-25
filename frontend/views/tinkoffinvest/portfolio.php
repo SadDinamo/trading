@@ -1,7 +1,9 @@
 <?php
 use yii\helpers\Html;
+use common\models\TksPreferencies;
 
-$this->title = 'Portfolio provided by API';
+$this->title = TksPreferencies::findByPreferenceName('ClientType')->Value .
+  ' portfolio';
 ?>
 
 <div>

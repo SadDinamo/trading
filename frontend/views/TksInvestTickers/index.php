@@ -20,7 +20,8 @@ $this->title = 'Список тикеров';
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'summary' => false,
+        'summary' => 'Показано {count} из {totalCount} тикеров. Страница {page} из {pageCount}.',
+        'summaryOptions' => ['class' => 'bg-primary text-white',],
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
             //'id',
@@ -41,15 +42,16 @@ $this->title = 'Список тикеров';
                 'attribute' => 'creationDate',
                 'contentOptions' => ['style' => 'width: 20%;']
             ],
+            'active',
             //'updateDate',
             //['class' => 'yii\grid\ActionColumn'],
         ],
         'pager' => [
             'lastPageLabel' => 'last',
             'firstPageLabel' => 'first',
-            'maxButtonCount' => 0,
+            'maxButtonCount' => 15,
         ],
-        'layout' => "{summary}\n{pager}\n{items}",
+        'layout' => "{summary}<br>{pager}\n{items}",
 
     ]); ?>
 

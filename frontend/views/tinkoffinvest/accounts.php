@@ -1,7 +1,9 @@
 <?php
 use yii\helpers\Html;
+use common\models\TksPreferencies;
 
-$this->title = 'Accounts object';
+$this->title = 'API ' . TksPreferencies::findByPreferenceName('ClientType')->Value .
+  ' accounts';
 ?>
 
 <div>

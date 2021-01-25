@@ -48,7 +48,7 @@ class TksInvestTickersSearch extends TksInvestTickers
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => ['defaultOrder' => ['creationDate'=>SORT_DESC]],
-            'pagination' => ['PageSize' => 14],
+            'pagination' => ['PageSize' => 100],
         ]);
 
         $this->load($params);
@@ -71,7 +71,8 @@ class TksInvestTickersSearch extends TksInvestTickers
             ->andFilterWhere(['like', 'isin', $this->isin])
             ->andFilterWhere(['like', 'currency', $this->currency])
             ->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'type', $this->type]);
+            ->andFilterWhere(['like', 'type', $this->type])
+            ->andFilterWhere(['like', 'active', $this->active]);
 
         return $dataProvider;
     }

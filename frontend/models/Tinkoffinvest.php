@@ -20,7 +20,6 @@ use \jamesRUS52\TinkoffInvest\TIInstrumentInfo;
 use common\models\TksPreferencies;
 use frontend\controllers\TkspreferenciesController;
 
-
 /**
  * 
  * Модель для работы робота с ТКС Инвестициями через API
@@ -88,31 +87,31 @@ class Tinkoffinvest extends Model {
     /**
      * Добавить доллары США на счет песочницы
      */
-    private static function sandboxAddRub($amount, $client)
+    private static function sandboxAddRub($amount)
     {
-        $client->sbCurrencyBalance($amount, TICurrencyEnum::RUB);
+        SELF::$client->sbCurrencyBalance($amount, TICurrencyEnum::RUB);
     }
 
     /**
      * Только для SANDBOX
      * Добавляет $Amount - количество $Ticker тикера на счет
      */
-    private static function sandboxPutStocksToAccount($amount, $ticker, $client)
+    private static function sandboxPutStocksToAccount($amount, $ticker)
     {
-        $client->sbPositionBalance($amount, $ticker);
+        SELF::$client->sbPositionBalance($amount, $ticker);
     }
 
     /**
-     * Тольуо для SANDBOX
+     * Только для SANDBOX
      * Удаляет все позииции со счета
      */
-    private static function sandboxClearAllPositions($client)
+    private static function sandboxClearAllPositions()
     {
-        $client->sbClear();
+        SELF::$client->sbClear();
     }
 
     /**
-     * Получение списка акций
+     * Получение массива акций
      */
     public function getTksStocks()
     {
@@ -121,7 +120,7 @@ class Tinkoffinvest extends Model {
     }
 
     /**
-     * Получение списка облигаций
+     * Получение массива облигаций
      */
     public function getTksBonds(){
         $bonds = SELF::$client->getBonds();
@@ -129,7 +128,7 @@ class Tinkoffinvest extends Model {
     }
 
     /**
-     * Получение списка ETF
+     * Получение массива ETF
      */
     public function getTksEtfs() {
         $etfs = SELF::$client->getEtfs();
@@ -137,35 +136,65 @@ class Tinkoffinvest extends Model {
     }
 
     /**
-     * Получение валютообменных курсов
+     * Получение массива валютообменных курсов
      */
     public function getTksCurrencies() {
         $currencies = SELF::$client->getCurrencies();
         return $currencies;
     }
 
+    /**
+     * 
+     * 
+     */
     public function getHistoryOrderBook ($figi,$depth) {
         $book = SELF::$client->getHistoryOrderBook($figi,$depth);
         return $book;
     }
 
-    public function getTksHistoricalCandles () {
+    /**
+     * 
+     * 
+     */
+    public function getTksHistoricalCandles (String $figi = 'BBG000N9MNX3') {
         $from = new \DateTime();
         $from->sub(new \DateInterval("P7D"));
         $to = new \DateTime();
-        $candles = SELF::$client->getHistoryCandles("BBG000BR37X2", $from, $to, TIIntervalEnum::MIN15);
+        $candles = SELF::$client->getHistoryCandles($figi, $from, $to, TIIntervalEnum::MIN15);
         return $candles;
     }
 
+    /**
+     * Возвращает масив объектов счетов
+     * 
+     * @return Array [ Object jamesRUS52\TinkoffInvest\TIAccount ]
+     */
     public function getTksAccounts () {
         $accounts = SELF::$client->getAccounts();
         return $accounts;
     }
 
+    /**
+     * Возвращает объект с данными текущего портфеля
+     * 
+     * @return Object jamesRUS52\TinkoffInvest\TIPortfolio
+     */
     public function getTksPortfolio () {
         $portfolio = SELF::$client->getPortfolio();
         return $portfolio;
     }
+
+    /**
+     * Возвращает баланс счета в заданной валюте-параметре
+     * 
+     * @return integer/float
+     */
+    public function getTksCurrencyBalance(String $TICurrencyEnum) {
+        $portfolio = SELF::getTksPortfolio();
+        $CurrencyBalance = $portfolio->getCurrencyBalance(TICurrencyEnum::getCurrency($TICurrencyEnum));
+        return $CurrencyBalance;
+    }
+
 
 
 }

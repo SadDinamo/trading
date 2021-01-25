@@ -136,22 +136,37 @@ class TksinvesttickersController extends Controller
         $currencies = Tinkoffinvest::getTksCurrencies();
         $tickers = array_merge($stocks, $bonds, $etfs, $currencies);
         Tinkoffinvest::ClientUnregister();
+
+        $dbTickers = TksInvestTickers::find()->all();
+        foreach ($dbTickers as $dbTicker) {
+            $dbTicker->active = 0;
+            $dbTicker->save();
+        }
+
         foreach ($tickers as $ticker) {
-            if (TksInvestTickers::find()->where(['figi' => $ticker->getFigi()])->one()) { } else {
-                $TksInvestTicker = new TksInvestTickers();
-                $TksInvestTicker->figi = $ticker->getFigi();
-                $TksInvestTicker->ticker = $ticker->getTicker();
-                $TksInvestTicker->isin = $ticker->getIsin();
-                $TksInvestTicker->minPriceIncrement = $ticker->getMinPriceIncrement();
-                $TksInvestTicker->lot = $ticker->getLot();
-                $TksInvestTicker->currency = $ticker->getCurrency();
-                $TksInvestTicker->name = $ticker->getName();
-                $TksInvestTicker->type = $ticker->getType();
+            if ((TksInvestTickers::find()->where(['figi' => $ticker->getFigi()])->one()) AND
+                (substr($ticker->getTicker(), -4) != '_old')) {
+                $TksInvestTicker = TksInvestTickers::find()->where(['figi' => $ticker->getFigi()])->one();
                 $TksInvestTicker->active = 1;
-                $tempDate = date('Y-m-d H:i:s', getdate()['0']);
-                $TksInvestTicker->creationDate = $tempDate;
-                $TksInvestTicker->updateDate = $tempDate;
                 $TksInvestTicker->save();
+                } 
+            else {
+                if (substr($ticker->getTicker(),-4)!='_old') {
+                    $TksInvestTicker = new TksInvestTickers();
+                    $TksInvestTicker->figi = $ticker->getFigi();
+                    $TksInvestTicker->ticker = $ticker->getTicker();
+                    $TksInvestTicker->isin = $ticker->getIsin();
+                    $TksInvestTicker->minPriceIncrement = $ticker->getMinPriceIncrement();
+                    $TksInvestTicker->lot = $ticker->getLot();
+                    $TksInvestTicker->currency = $ticker->getCurrency();
+                    $TksInvestTicker->name = $ticker->getName();
+                    $TksInvestTicker->type = $ticker->getType();
+                    $TksInvestTicker->active = 1;
+                    $tempDate = date('Y-m-d H:i:s', getdate()['0']);
+                    $TksInvestTicker->creationDate = $tempDate;
+                    $TksInvestTicker->updateDate = $tempDate;
+                    $TksInvestTicker->save();
+                }
             }
         };
 

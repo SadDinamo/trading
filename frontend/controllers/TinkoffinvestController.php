@@ -12,77 +12,6 @@ class TinkoffinvestController extends Controller
 {
   public $client;
 
-  public function actionAllmarketstocks () {
-      Tinkoffinvest::startClient();
-      $filterModel = new \jamesRUS52\TinkoffInvest\TIInstrument('','','','','','','','');
-      $stocks = Tinkoffinvest::getTksStocks($this->client);
-      $results = array();
-      foreach ($stocks as $stock) {
-        array_push($results,[
-          'figi'=>$stock->getFigi(),
-          'ticker'=>$stock->getTicker(),
-          'isin'=>$stock->getIsin(),
-          'minPriceIncrement'=>$stock->getMinPriceIncrement(),
-          'lot'=>$stock->getLot(),
-          'currency'=>$stock->getCurrency(),
-          'name'=>$stock->getName(),
-          'type'=>$stock->getType(),
-        ]);
-      }
-      $dataProvider = new ArrayDataProvider([
-        'allModels'=>$results,
-        'pagination'=>[
-          'pageSize'=> 15,
-        ],
-        'sort'=>[
-          'attributes'=>['ticker'],
-          'defaultOrder'=>[
-            'ticker'=>SORT_ASC,
-          ],
-        ],
-      ]);
-      Tinkoffinvest::ClientUnregister();
-      return $this->render('allmarketstocks', [
-          'dataProvider' => $dataProvider,
-          'filterModel' => $filterModel,
-      ]);
-  }
-
-  // Получение массива торгуемых акций
-  public function actionStocks()
-  {
-    Tinkoffinvest::StartClient();
-    $stocks = Tinkoffinvest::getTksStocks($this->client);
-    Tinkoffinvest::ClientUnregister();
-    return $this->render('stocks', ['stocks'=>$stocks]);
-  }
-
-  // Получение массива торгуемых облигаций
-  public function actionBonds () {
-    Tinkoffinvest::StartClient();
-    $bonds = Tinkoffinvest::getTksBonds($this->client);
-    Tinkoffinvest::ClientUnregister();
-    return $this->render('bonds', ['bonds'=>$bonds]);
-  }
-
-  // Получение массива торгуемых ETF
-  public function actionEtfs()
-  {
-    Tinkoffinvest::StartClient();
-    $etfs = Tinkoffinvest::getTksEtfs($this->client);
-    Tinkoffinvest::ClientUnregister();
-    return $this->render('etfs', ['etfs' => $etfs]);
-  }
-
-  // Получение массива торгуемых валют
-  public function actionCurrencies()
-  {
-    Tinkoffinvest::StartClient();
-    $currencies = Tinkoffinvest::getTksCurrencies($this->client);
-    Tinkoffinvest::ClientUnregister();
-    return $this->render('currencies', ['currencies' => $currencies]);
-  }
-
   /**
    * Get array filtered stocks from market
    * Ex.: $stockes = $client->getStocks(["V","LKOH"]);
@@ -101,7 +30,6 @@ class TinkoffinvestController extends Controller
       return $stocks;
   }
 
-
   /**
    * Get array filtered ETFs from market
    * Ex.: $instr = $client->getEtfs(["FXRU"]);
@@ -110,7 +38,6 @@ class TinkoffinvestController extends Controller
       $stocks = $this->client->getEtfs($TikersArray);
       return $stocks;
   }
-
 
   /**
    * Get array filtered currencies from market
@@ -151,41 +78,77 @@ class TinkoffinvestController extends Controller
       return $candles;
   }
 
-  /** 
-  * https://github.com/jamesRUS52/tinkoff-invest
-  * 
-  * //TODO::
-  * разобраться со свечами из GetHistoricalCandles
-  * Get accounts
-  * Get portfolio (if null, used default Tinkoff account)
-  * Get portfolio balance
-  * Get instrument lots count
-  * Send limit order (default brokerAccountId = Tinkoff)
-  * Send market order (default brokerAccountId = Tinkoff)
-  * Cancel order
-  * List of operations from 10 days ago to 30 days period
-  * Getting instrument status
-  * Get Candles and Order books
-  * 
-  * SUPER: subscribe on changes order books
-  *
-  */
 
 
+
+// *** ЭКШОНЫ ***
+
+
+
+  // Получение массива торгуемых акций
+  public function actionStocks()
+  {
+    Tinkoffinvest::StartClient();
+    $stocks = Tinkoffinvest::getTksStocks($this->client);
+    Tinkoffinvest::ClientUnregister();
+    return $this->render('stocks', ['stocks' => $stocks]);
+  }
+
+  // Получение массива торгуемых облигаций
+  public function actionBonds()
+  {
+    Tinkoffinvest::StartClient();
+    $bonds = Tinkoffinvest::getTksBonds($this->client);
+    Tinkoffinvest::ClientUnregister();
+    return $this->render('bonds', ['bonds' => $bonds]);
+  }
+
+  // Получение массива торгуемых ETF
+  public function actionEtfs()
+  {
+    Tinkoffinvest::StartClient();
+    $etfs = Tinkoffinvest::getTksEtfs($this->client);
+    Tinkoffinvest::ClientUnregister();
+    return $this->render('etfs', ['etfs' => $etfs]);
+  }
+
+  // Получение массива торгуемых валют
+  public function actionCurrencies()
+  {
+    Tinkoffinvest::StartClient();
+    $currencies = Tinkoffinvest::getTksCurrencies($this->client);
+    Tinkoffinvest::ClientUnregister();
+    return $this->render('currencies', ['currencies' => $currencies]);
+  }
 
   public function actionAccounts () {
     Tinkoffinvest::StartClient();
     $accounts = Tinkoffinvest::getTksAccounts();
+    Tinkoffinvest::ClientUnregister();
     return $this->render('accounts', ['a' => $accounts]);
   }
-
 
   public function actionPortfolio() {
     Tinkoffinvest::StartClient();
     $portfolio = Tinkoffinvest::getTksPortfolio();
+    Tinkoffinvest::ClientUnregister();
     return $this->render('portfolio', ['p' => $portfolio]);
   }
 
-
+  /**
+   * Баланс счета по заданной валюте-параметру
+   * 
+   * @param $TICurrencyEnum string
+   */
+  public function actionPortfoliocurrencybalance ($TICurrencyEnum='USD') {
+    Tinkoffinvest::StartClient();
+    $PortfolioCurrencyBalance = Tinkoffinvest::getTksCurrencyBalance($TICurrencyEnum);
+    Tinkoffinvest::ClientUnregister();
+    return $this->render('currencybalance', 
+    [
+      'p' => $PortfolioCurrencyBalance,
+      'c' => $TICurrencyEnum,
+    ]);;
+  }
 
 }
