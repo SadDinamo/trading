@@ -45,6 +45,7 @@ AppAsset::register($this);
             ['label' => 'Отчеты', 'items' => [
                 '<li class="dropdown-header">Внутренняя база данных</li>',
                 ['label' => 'Список всех тикеров', 'url' => ['/tksinvesttickers/index']],
+                ['label' => 'Список статистики тикеров', 'url' => ['/tickerstats/index']],
                 '<li class="divider"></li>',
                 '<li class="dropdown-header">Парсинг сайтов</li>',
                 ['label' => 'Маржинальные тикеры Tinkoff', 'url' => ['/parser/marginsharesarray']],
