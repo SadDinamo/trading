@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use frontend\models\Parser;
+use app\models\TksInvestTickers;
 
 /**
  * TickerstatsController implements the CRUD actions for TickerStats model.
@@ -133,21 +134,87 @@ class TickerstatsController extends Controller
      * 
      * @param string $ticker
      */
-    public function addTickerInfo($ticker='FIZZ'){
+    public function addTickerInfo($ticker = 'FIZZ'){
         $tickerInfo = Parser::yahooTickerInfo($ticker);
-        if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
-                'name' => 'Short Ratio', 
-                'date' => $tickerInfo['Short Ratio']['date'],
-            ])->one()) {
-        } else {
-            $tickerStats = new TickerStats;
-            $tickerStats->ticker = $ticker;
-            $tickerStats->name = 'Short Ratio';
-            $tickerStats->date = $tickerInfo['Short Ratio']['date'];
-            $tickerStats->value = $tickerInfo['Short Ratio']['value'];
-            //var_dump($tickerStats);
-            $tickerStats->save();
+        if (! $tickerInfo['Found'])
+        {} else {
+            if ($tickerInfo['Found']) {
+                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+                        'name' => 'Short Ratio', 
+                        'date' => $tickerInfo['Short Ratio']['date'],
+                    ])->one()) {
+                } else {
+                    $tickerStats = new TickerStats;
+                    $tickerStats->ticker = $ticker;
+                    $tickerStats->name = 'Short Ratio';
+                    $tickerStats->date = $tickerInfo['Short Ratio']['date'];
+                    $tickerStats->value = $tickerInfo['Short Ratio']['value'];
+                    //var_dump($tickerStats);
+                    $tickerStats->save();
+                }
+                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+                    'name' => 'Total Cash (mrq)',
+                    'date' => $tickerInfo[ 'Total Cash (mrq)']['date'],
+                ])->one()) { } else {
+                    $tickerStats = new TickerStats;
+                    $tickerStats->ticker = $ticker;
+                    $tickerStats->name = 'Total Cash (mrq)';
+                    $tickerStats->date = $tickerInfo[ 'Total Cash (mrq)']['date'];
+                    $tickerStats->value = $tickerInfo[ 'Total Cash (mrq)']['value'];
+                    //var_dump($tickerStats);
+                    $tickerStats->save();
+                }
+                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+                    'name' => 'Total Debt (mrq)',
+                    'date' => $tickerInfo['Total Debt (mrq)']['date'],
+                ])->one()) { } else {
+                    $tickerStats = new TickerStats;
+                    $tickerStats->ticker = $ticker;
+                    $tickerStats->name = 'Total Debt (mrq)';
+                    $tickerStats->date = $tickerInfo['Total Debt (mrq)']['date'];
+                    $tickerStats->value = $tickerInfo['Total Debt (mrq)']['value'];
+                    //var_dump($tickerStats);
+                    $tickerStats->save();
+                }
+                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+                    'name' => 'Short % of Float',
+                    'date' => $tickerInfo['Short % of Float']['date'],
+                ])->one()) { } else {
+                    $tickerStats = new TickerStats;
+                    $tickerStats->ticker = $ticker;
+                    $tickerStats->name = 'Short % of Float';
+                    $tickerStats->date = $tickerInfo['Short % of Float']['date'];
+                    $tickerStats->value = $tickerInfo['Short % of Float']['value'];
+                    //var_dump($tickerStats);
+                    $tickerStats->save();
+                }
+                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+                    'name' => 'Operating Cash Flow (Trailing Twelve Months)',
+                    'date' => $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['date'],
+                ])->one()) { } else {
+                    $tickerStats = new TickerStats;
+                    $tickerStats->ticker = $ticker;
+                    $tickerStats->name = 'Operating Cash Flow (Trailing Twelve Months)';
+                    $tickerStats->date = $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['date'];
+                    $tickerStats->value = $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['value'];
+                    //var_dump($tickerStats);
+                    $tickerStats->save();
+                }
+            }
         }
+    }
+
+    /**
+     * Adds all tickers info for each ticker in db
+     * 
+     */
+    public function addTickersInfo () {
+        set_time_limit(60*60*2); // 2*60 minutes to run
+        $tickersArray = TksInvestTickers::find()->select('ticker')->where(['active'=>1,'type'=>'Stock'])->all();
+        foreach($tickersArray as $ticker){
+            TickerstatsController::addTickerInfo($ticker->ticker);
+        };
+        return;
     }
 
     /**
@@ -155,5 +222,9 @@ class TickerstatsController extends Controller
      */
     public function actionAddtickerinfo(){
         $this->addTickerInfo();
+    }
+    public function actionAddtickersinfo()
+    {
+        $this->addTickersInfo();
     }
 }

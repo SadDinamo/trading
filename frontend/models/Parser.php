@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use yii\base\Model;
 use yii\httpclient\client;
+use yii\helpers\BaseJson;
+use yii\helpers\ArrayHelper;
 
 /**
  *  Модель для получения данных с различных сайтов
@@ -51,17 +53,50 @@ class Parser extends Model
     }
 
     /**
+     * Форматирует строку парсинга сайтов и возвращает ее в типе float
+     * 
+     * @param string
+     * 
+     * @return float
+     */
+    private function StrToFloat ($string) {
+        $cd = 'UTF-8';
+        switch (mb_substr($string, strlen($string) - 1, 1, $cd)) {
+            case 'M':
+            $result = floatval(mb_substr($string, 0, strlen($string) - 1, $cd)) * 1000000;
+            break;
+            case 'B':
+            $result = floatval(mb_substr($string, 0, strlen($string) - 1, $cd)) * 1000000000;
+            break;
+            case 'K':
+            $result = floatval(mb_substr($string, 0, strlen($string) - 1, $cd)) * 1000;
+            break;
+            case '%':
+            $result = floatval(mb_substr($string, 0, strlen($string) - 1, $cd)) / 100;
+            break;
+            default:
+            $result = floatval($string);
+        }
+        return $result;
+    }
+
+    /**
      * Возвращает массив с данными по тикеру с сайта Yahoo.finance
      * 
      * @param string $ticker Тикер, для которого будет возвращен массив с данными
      * 
      * @return array
      */
-    public static function yahooTickerInfo($ticker) // TODO:: преобразование 'value' по последнему его символу m->millions, b->billions
-    {
+    public static function yahooTickerInfo($ticker){
         $result = array();
-        $result['Ticker'] = $ticker;
+        $cd = 'UTF-8';
         $content = SELF::GetHtmlContentByLink('https://finance.yahoo.com/quote/' . $ticker . '/key-statistics?p=' . $ticker);
+        if (mb_stripos($content, 'All (0)', 0, $cd)) {
+            $result['Found'] = FALSE;
+        } else {
+            $result['Found'] = TRUE;
+        };
+        $result['Ticker'] = $ticker;
         // Fiscal Year Ends
         $beginString = array('Fiscal Year Ends</span>', 'data-reactid="', 'data-reactid="', '">');
         $endString = '</td></tr>';
@@ -73,29 +108,47 @@ class Parser extends Model
         // Total Cash (mrq)
         $beginString = array('Total Cash</span>', 'data-reactid="', 'data-reactid="', '">');
         $endString = '</td></tr>';
-        $result['Total Cash (mrq)'] = array('value' => SELF::HtmlGetString($content, $beginString, $endString), 'date' => $result['Most Recent Quarter (mrq)']);
+        $result['Total Cash (mrq)'] = array('value' => SELF::StrToFloat(SELF::HtmlGetString($content, $beginString, $endString)), 'date' => $result['Most Recent Quarter (mrq)']);
         // Total Debt (mrq)
         $beginString = array('Total debt</span>', 'data-reactid="', 'data-reactid="', '">');
         $endString = '</td></tr>';
-        $result['Total Debt (mrq)'] = array('value' => SELF::HtmlGetString($content, $beginString, $endString), 'date' => $result['Most Recent Quarter (mrq)']);
+        $result['Total Debt (mrq)'] = array('value' => SELF::StrToFloat(SELF::HtmlGetString($content, $beginString, $endString)), 'date' => $result['Most Recent Quarter (mrq)']);
         // Short Ratio
         $beginString = array('Short Ratio (');
         $endString = ')';
         $date = date('Y-m-d H:i:s', strtotime(SELF::HtmlGetString($content, $beginString, $endString)));
         $beginString = array('Short Ratio ', 'data - reactid = "', 'data-reactid="', 'data-reactid="', '">');
         $endString = '</td></tr>';
-        $result['Short Ratio'] = array('value' => SELF::HtmlGetString($content, $beginString, $endString), 'date' => $date);
+        $result['Short Ratio'] = array('value' => SELF::StrToFloat(SELF::HtmlGetString($content, $beginString, $endString)), 'date' => $date);
         // Short % of Float
         $beginString = array('Short % of Float (');
         $endString = ')';
         $date = date('Y-m-d H:i:s', strtotime(SELF::HtmlGetString($content, $beginString, $endString)));
         $beginString = array('Short % of Float ', 'data - reactid = "', 'data-reactid="', 'data-reactid="', '">');
         $endString = '</td></tr>';
-        $result['Short % of Float'] = array('value' => SELF::HtmlGetString($content, $beginString, $endString), 'date' => $date);
+        $result['Short % of Float'] = array('value' => SELF::StrToFloat(SELF::HtmlGetString($content, $beginString, $endString)), 'date' => $date);
         // Operating Cash Flow (Trailing Twelve Months)
         $beginString = array('Operating Cash Flow', 'data-reactid="', 'data-reactid="', '">');
         $endString = '</td></tr>';
-        $result['Operating Cash Flow (Trailing Twelve Months)'] = array('value' => SELF::HtmlGetString($content, $beginString, $endString), 'date' => date('Y-m-d H:i:s', strtotime('today')));
+        $result['Operating Cash Flow (Trailing Twelve Months)'] = array('value' => SELF::StrToFloat(SELF::HtmlGetString($content, $beginString, $endString)), 'date' => date('Y-m-d H:i:s', strtotime('today')));
+        return $result;
+    }
+
+
+    /**
+     * Возвращает массив с данными JSON запроса по тикеру с сайта use yii\base\UnknownMethodException;
+     * 
+     * @param string $ticker
+     * 
+     * @return array
+     * 
+     */
+    public static function getYahooTickerJSON ($ticker) {
+        $content = SELF::GetHtmlContentByLink('https://query1.finance.yahoo.com/v10/finance/quoteSummary/'.$ticker.'?modules=price,defaultKeyStatistics');
+        $result = BaseJson::decode($content);
+        $result = ArrayHelper::getValue($result, 'quoteSummary');
+        $result = ArrayHelper::getValue($result, 'result');
+        $result = ArrayHelper::getValue($result, 0);
         return $result;
     }
 

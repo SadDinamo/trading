@@ -16,5 +16,10 @@ return [
             // for the mailer to send real emails.
             'useFileTransport' => true,
         ],
+        'request' => [
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
+        ]
     ],
 ];

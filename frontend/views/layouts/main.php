@@ -62,9 +62,13 @@ AppAsset::register($this);
             ]],
             ['label' => 'Действия', 'items' => [
                 ['label' => 'Обновить список тикеров', 'url' => ['/tksinvesttickers/tickerstodb']],
+                ['label' => 'Обновить статистику Yahoo finance', 'url' => ['/tickerstats/addtickersinfo']],
             ]],
             ['label' => 'Sandbox only', 'items' => [
                 ['label' => 'Добавить денег', 'url' => ['#']],
+            ]],
+            ['label' => 'TEST', 'items' => [
+                ['label' => 'JSON yahoo finance по тикеру', 'url' => ['/parser/getyahootickerjson']],
             ]],
             //['label' => 'About', 'url' => ['/site/about']],
             //['label' => 'Contact', 'url' => ['/site/contact']],

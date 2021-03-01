@@ -24,8 +24,17 @@ class ParserController extends Controller
      * Var_dump отчет с информацией по тикеру с yahoo.finance
      * 
      */
-    public function actionYahootickerinfo ($ticker = 'FIZZ') {
+    public function actionYahootickerinfo ($ticker = 'AAPL') {
         $a = Parser::yahooTickerInfo($ticker);
         return $this->render('yahootickerinfo', ['a' => $a]);
+    }
+
+    /**
+     * Получение массива данных по тикеру с Яху финанс с помощью JSON
+     * 
+     */
+    public function actionGetyahootickerjson ($ticker = 'FIZZ') {
+        $a = Parser::getYahooTickerJSON($ticker);
+        return $this->render('yahoojsontickerinfo',['a' => $a]);
     }
 }

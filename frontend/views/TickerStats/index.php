@@ -18,7 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Create Ticker Stats', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -27,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'ticker',
+            ['attribute' => 'ticker', 'contentOptions' => ['class' => 'tickerClass']],
             'name',
             'date',
             'value',
@@ -38,3 +39,44 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+
+<?php
+$jsTickerHover = <<<JS
+    var tickers = document.querySelectorAll('.tickerClass');
+    for (var i = 0; i < tickers.length; i++) {
+        tickers[i].onclick = function() {
+            console.log('click');
+        }
+        tickers[i].addEventListener('mouseenter', function(event) {
+            console.log('mouseenter ' + event.toElement.innerHTML);
+            var senddata = event.toElement.innerHTML;
+            $.ajax({
+                url: '/tickerstats/index',
+                type: 'POST',
+                data: senddata,
+                success: function(receivedata){
+                    //console.log(receivedata);
+                    console.log('Ajax response received from server for senddata = ' + senddata);
+                },
+                error: function(){
+                    alert('Error sending Ajax');
+                }
+            });
+            return false;
+        });
+        tickers[i].addEventListener('mouseleave', function(event) {
+            console.log('mouseleave ' + event.fromElement.innerHTML);
+        });
+
+        // tickers[i].addEventListener('mouseover', function(event) {
+        //     console.log('mouseover ' + event.toElement.innerHTML);
+        // });
+
+    }
+JS;
+
+$this->registerJs($jsTickerHover);
+
+var_dump($dataProvider->getModels());
+
+?>
