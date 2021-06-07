@@ -77,6 +77,6 @@ JS;
 
 $this->registerJs($jsTickerHover);
 
-var_dump($dataProvider->getModels());
+// var_dump($dataProvider->getModels());
 
 ?>

@@ -31,10 +31,15 @@ class TickerStats extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['ticker', 'name', 'date', 'value'], 'required'],
+            [['ticker', 'date'], 'required'],
             [['date'], 'safe'],
-            [['value'], 'number'],
-            [['ticker', 'name'], 'string', 'max' => 255],
+            [['ticker'], 'string', 'max' => 255],
+            // [['short_ratio', 
+            // 'short_percent_of_float', 
+            // 'ebitda', 
+            // 'total_cash', 
+            // 'total_debt', 
+            // 'operating_cash_flow'],'number'],
             [['ticker'], 'exist', 'skipOnError' => true, 'targetClass' => TksInvestTickers::className(), 'targetAttribute' => ['ticker' => 'ticker']],
         ];
     }
@@ -47,18 +52,22 @@ class TickerStats extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'ticker' => 'Ticker',
-            'name' => 'Name',
             'date' => 'Date',
-            'value' => 'Value',
+            'short_ratio' => 'Short ratio',
+            'short_percent_of_float' => 'Short percent of float',
+            'ebitda' => 'EBITDA',
+            'total_cash' => 'Total cash',
+            'total_debt' => 'Total debt',
+            'operating_cash_flow' => 'Operating cash flow'
         ];
     }
 
     /**
-     * Gets query for [[Ticker0]].
+     * Gets query for [[Ticker]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTicker0()
+    public function getTicker()
     {
         return $this->hasOne(TksInvestTickers::className(), ['ticker' => 'ticker']);
     }

@@ -134,74 +134,95 @@ class TickerstatsController extends Controller
      * 
      * @param string $ticker
      */
-    public function addTickerInfo($ticker = 'FIZZ'){
-        $tickerInfo = Parser::yahooTickerInfo($ticker);
-        if (! $tickerInfo['Found'])
-        {} else {
-            if ($tickerInfo['Found']) {
-                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
-                        'name' => 'Short Ratio', 
-                        'date' => $tickerInfo['Short Ratio']['date'],
-                    ])->one()) {
-                } else {
-                    $tickerStats = new TickerStats;
-                    $tickerStats->ticker = $ticker;
-                    $tickerStats->name = 'Short Ratio';
-                    $tickerStats->date = $tickerInfo['Short Ratio']['date'];
-                    $tickerStats->value = $tickerInfo['Short Ratio']['value'];
-                    //var_dump($tickerStats);
-                    $tickerStats->save();
-                }
-                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
-                    'name' => 'Total Cash (mrq)',
-                    'date' => $tickerInfo[ 'Total Cash (mrq)']['date'],
-                ])->one()) { } else {
-                    $tickerStats = new TickerStats;
-                    $tickerStats->ticker = $ticker;
-                    $tickerStats->name = 'Total Cash (mrq)';
-                    $tickerStats->date = $tickerInfo[ 'Total Cash (mrq)']['date'];
-                    $tickerStats->value = $tickerInfo[ 'Total Cash (mrq)']['value'];
-                    //var_dump($tickerStats);
-                    $tickerStats->save();
-                }
-                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
-                    'name' => 'Total Debt (mrq)',
-                    'date' => $tickerInfo['Total Debt (mrq)']['date'],
-                ])->one()) { } else {
-                    $tickerStats = new TickerStats;
-                    $tickerStats->ticker = $ticker;
-                    $tickerStats->name = 'Total Debt (mrq)';
-                    $tickerStats->date = $tickerInfo['Total Debt (mrq)']['date'];
-                    $tickerStats->value = $tickerInfo['Total Debt (mrq)']['value'];
-                    //var_dump($tickerStats);
-                    $tickerStats->save();
-                }
-                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
-                    'name' => 'Short % of Float',
-                    'date' => $tickerInfo['Short % of Float']['date'],
-                ])->one()) { } else {
-                    $tickerStats = new TickerStats;
-                    $tickerStats->ticker = $ticker;
-                    $tickerStats->name = 'Short % of Float';
-                    $tickerStats->date = $tickerInfo['Short % of Float']['date'];
-                    $tickerStats->value = $tickerInfo['Short % of Float']['value'];
-                    //var_dump($tickerStats);
-                    $tickerStats->save();
-                }
-                if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
-                    'name' => 'Operating Cash Flow (Trailing Twelve Months)',
-                    'date' => $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['date'],
-                ])->one()) { } else {
-                    $tickerStats = new TickerStats;
-                    $tickerStats->ticker = $ticker;
-                    $tickerStats->name = 'Operating Cash Flow (Trailing Twelve Months)';
-                    $tickerStats->date = $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['date'];
-                    $tickerStats->value = $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['value'];
-                    //var_dump($tickerStats);
-                    $tickerStats->save();
-                }
+    public function addTickerInfo($ticker){
+        // $tickerInfo = Parser::yahooTickerInfo($ticker);
+        $tickerInfo = Parser::getYahooTickerJSON($ticker);
+        if (!$tickerInfo['financialData']['financialCurrency']) {
+            } else {
+            if (TickerStats::find()->where([
+                'ticker' => $ticker,
+                'date' => $tickerInfo['defaultKeyStatistics']['dateShortInterest']['fmt'],
+            ])->one()) { } 
+            else {
+                $tickerStats = new TickerStats;
+                $tickerStats->ticker = $ticker;
+                $tickerStats->date = $tickerInfo['defaultKeyStatistics']['dateShortInterest']['fmt'];
+                $tickerStats->short_ratio = $tickerInfo[ 'defaultKeyStatistics']['shortRatio']['raw'];
+                $tickerStats->short_percent_of_float = $tickerInfo['defaultKeyStatistics']['shortPercentOfFloat']['raw'];
+                $tickerStats->ebitda = $tickerInfo['financialData']['ebitda']['raw'];
+                $tickerStats->total_cash = $tickerInfo['financialData']['totalCash']['raw'];
+                $tickerStats->total_debt = $tickerInfo['financialData']['totalDebt']['raw'];
+                $tickerStats->operating_cash_flow = $tickerInfo['financialData']['operatingCashflow']['raw'];
+                $tickerStats->save();
             }
         }
+
+        // if (! $tickerInfo['Found'])
+        // {} else {
+        //     if ($tickerInfo['Found']) {
+        //         if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+        //                 'name' => 'Short Ratio', 
+        //                 'date' => $tickerInfo['Short Ratio']['date'],
+        //             ])->one()) {
+        //         } else {
+        //             $tickerStats = new TickerStats;
+        //    \\         $tickerStats->ticker = $ticker;
+        //             $tickerStats->name = 'Short Ratio';
+        //             $tickerStats->date = $tickerInfo['Short Ratio']['date'];
+        //             $tickerStats->value = $tickerInfo['Short Ratio']['value'];
+        //             //var_dump($tickerStats);
+        //             $tickerStats->save();
+        //         }
+        //         if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+        //             'name' => 'Total Cash (mrq)',
+        //             'date' => $tickerInfo[ 'Total Cash (mrq)']['date'],
+        //         ])->one()) { } else {
+        //             $tickerStats = new TickerStats;
+        //             $tickerStats->ticker = $ticker;
+        //             $tickerStats->name = 'Total Cash (mrq)';
+        //             $tickerStats->date = $tickerInfo[ 'Total Cash (mrq)']['date'];
+        //             $tickerStats->value = $tickerInfo[ 'Total Cash (mrq)']['value'];
+        //             //var_dump($tickerStats);
+        //             $tickerStats->save();
+        //         }
+        //         if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+        //             'name' => 'Total Debt (mrq)',
+        //             'date' => $tickerInfo['Total Debt (mrq)']['date'],
+        //         ])->one()) { } else {
+        //             $tickerStats = new TickerStats;
+        //             $tickerStats->ticker = $ticker;
+        //             $tickerStats->name = 'Total Debt (mrq)';
+        //             $tickerStats->date = $tickerInfo['Total Debt (mrq)']['date'];
+        //             $tickerStats->value = $tickerInfo['Total Debt (mrq)']['value'];
+        //             //var_dump($tickerStats);
+        //             $tickerStats->save();
+        //         }
+        //         if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+        //             'name' => 'Short % of Float',
+        //             'date' => $tickerInfo['Short % of Float']['date'],
+        //         ])->one()) { } else {
+        //             $tickerStats = new TickerStats;
+        //             $tickerStats->ticker = $ticker;
+        //             $tickerStats->name = 'Short % of Float';
+        //             $tickerStats->date = $tickerInfo['Short % of Float']['date'];
+        //             $tickerStats->value = $tickerInfo['Short % of Float']['value'];
+        //             //var_dump($tickerStats);
+        //             $tickerStats->save();
+        //         }
+        //         if (TickerStats::find()->where(['ticker' => $ticker])->andwhere([
+        //             'name' => 'Operating Cash Flow (Trailing Twelve Months)',
+        //             'date' => $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['date'],
+        //         ])->one()) { } else {
+        //             $tickerStats = new TickerStats;
+        //             $tickerStats->ticker = $ticker;
+        //             $tickerStats->name = 'Operating Cash Flow (Trailing Twelve Months)';
+        //             $tickerStats->date = $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['date'];
+        //             $tickerStats->value = $tickerInfo['Operating Cash Flow (Trailing Twelve Months)']['value'];
+        //             //var_dump($tickerStats);
+        //             $tickerStats->save();
+        //         }
+        //     }
+        // }
     }
 
     /**
@@ -220,9 +241,9 @@ class TickerstatsController extends Controller
     /**
      * test - //TODO:: to delete
      */
-    public function actionAddtickerinfo(){
-        $this->addTickerInfo();
-    }
+    // public function actionAddtickerinfo(){
+    //     $this->addTickerInfo($ticker);
+    // }
     public function actionAddtickersinfo()
     {
         $this->addTickersInfo();

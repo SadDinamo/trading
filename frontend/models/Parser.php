@@ -90,7 +90,8 @@ class Parser extends Model
     public static function yahooTickerInfo($ticker){
         $result = array();
         $cd = 'UTF-8';
-        $content = SELF::GetHtmlContentByLink('https://finance.yahoo.com/quote/' . $ticker . '/key-statistics?p=' . $ticker);
+        $content = SELF::GetHtmlContentByLink( 'https://query2.finance.yahoo.com/v10/finance/quoteSummary/' . $ticker .
+            '?modules=defaultKeyStatistics,financialData');
         if (mb_stripos($content, 'All (0)', 0, $cd)) {
             $result['Found'] = FALSE;
         } else {
@@ -144,7 +145,13 @@ class Parser extends Model
      * 
      */
     public static function getYahooTickerJSON ($ticker) {
-        $content = SELF::GetHtmlContentByLink('https://query1.finance.yahoo.com/v10/finance/quoteSummary/'.$ticker.'?modules=price,defaultKeyStatistics');
+        $content = SELF::GetHtmlContentByLink('https://query2.finance.yahoo.com/v10/finance/quoteSummary/' .$ticker.
+            '?modules=defaultKeyStatistics,financialData');
+        $result = NULL;
+        if (mb_strpos($content, '(was java.lang.NullPointerException)', 0, 'UTF-8') === 0) {
+            $content = SELF::GetHtmlContentByLink('https://query1.finance.yahoo.com/v10/finance/quoteSummary/' . $ticker . '.ME?modules=price,defaultKeyStatistics');
+        } else {
+        }
         $result = BaseJson::decode($content);
         $result = ArrayHelper::getValue($result, 'quoteSummary');
         $result = ArrayHelper::getValue($result, 'result');
