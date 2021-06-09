@@ -145,7 +145,7 @@ class Parser extends Model
      * 
      */
     public static function getYahooTickerJSON ($ticker) {
-        $content = SELF::GetHtmlContentByLink('https://query2.finance.yahoo.com/v10/finance/quoteSummary/' .$ticker.
+        $content = SELF::GetHtmlContentByLink('https://query2.finance.yahoo.com/v11/finance/quoteSummary/' .$ticker.
             '?modules=defaultKeyStatistics,financialData');
         $result = NULL;
         if (mb_strpos($content, '(was java.lang.NullPointerException)', 0, 'UTF-8') === 0) {

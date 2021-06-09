@@ -13,17 +13,28 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
+        'options' => [
+            'data-pjax' => 1
+        ],
     ]); ?>
 
     <?= $form->field($model, 'id') ?>
 
     <?= $form->field($model, 'ticker') ?>
 
-    <?= $form->field($model, 'name') ?>
+    <?= $form->field($model, 'short_ratio') ?>
+
+    <?= $form->field($model, 'short_percent_of_float') ?>
+
+    <?= $form->field($model, 'ebitda') ?>
+
+    <?= $form->field($model, 'total_cash') ?>
+
+    <?= $form->field($model, 'total_debt') ?>
+
+    <?= $form->field($model, 'operating_cash_flow') ?>
 
     <?= $form->field($model, 'date') ?>
-
-    <?= $form->field($model, 'value') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

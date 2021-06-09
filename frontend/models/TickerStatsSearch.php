@@ -18,8 +18,8 @@ class TickerStatsSearch extends TickerStats
     {
         return [
             [['id'], 'integer'],
-            [['ticker', 'name', 'date'], 'safe'],
-            [['value'], 'number'],
+            [['ticker', 'date'], 'safe'],
+            [['short_ratio', 'short_percent_of_float', 'ebitda', 'total_cash', 'total_debt', 'operating_cash_flow'], 'number'],
         ];
     }
 
@@ -60,12 +60,16 @@ class TickerStatsSearch extends TickerStats
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'short_ratio' => $this->short_ratio,
+            'short_percent_of_float' => $this->short_percent_of_float,
+            'ebitda' => $this->ebitda,
+            'total_cash' => $this->total_cash,
+            'total_debt' => $this->total_debt,
+            'operating_cash_flow' => $this->operating_cash_flow,
             'date' => $this->date,
-            'value' => $this->value,
         ]);
 
-        $query->andFilterWhere(['like', 'ticker', $this->ticker])
-            ->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'ticker', $this->ticker]);
 
         return $dataProvider;
     }

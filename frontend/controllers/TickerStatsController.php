@@ -142,7 +142,7 @@ class TickerstatsController extends Controller
             if (TickerStats::find()->where([
                 'ticker' => $ticker,
                 'date' => $tickerInfo['defaultKeyStatistics']['dateShortInterest']['fmt'],
-            ])->one()) { } 
+            ])->one()) { }
             else {
                 $tickerStats = new TickerStats;
                 $tickerStats->ticker = $ticker;
@@ -230,13 +230,17 @@ class TickerstatsController extends Controller
      * 
      */
     public function addTickersInfo () {
-        set_time_limit(60*60*2); // 2*60 minutes to run
         $tickersArray = TksInvestTickers::find()->select('ticker')->where(['active'=>1,'type'=>'Stock'])->all();
-        foreach($tickersArray as $ticker){
-            TickerstatsController::addTickerInfo($ticker->ticker);
+        set_time_limit(count($tickersArray)*2); // 2 seconds per ticker overall time limitation for function
+        foreach($tickersArray as $tickerOne){
+            usleep(1800001); // micro sec delay to avoid 2000 requests per hour limit
+            TickerstatsController::addTickerInfo($tickerOne->ticker);
         };
-        return;
+        // TickerstatsController::addTickerInfo('LCII');
+        Yii::$app->session->setFlash('success', 'Статистика по тикерам обновлена');
+        return $this->redirect(['index']);
     }
+   
 
     /**
      * test - //TODO:: to delete

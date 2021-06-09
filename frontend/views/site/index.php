@@ -1,5 +1,7 @@
 <?php
 
+use yii\bootstrap\Progress;
+
 /* @var $this yii\web\View */
 
 $this->title = 'My Yii Application';
@@ -15,7 +17,13 @@ $this->title = 'My Yii Application';
     <p><a href="https://invest-terminal.useresponse.com/" target="_blank">База знаний Тинькофф</a></p>
 
     <div class="body-content">
-
+        <div class="progressbar col-lg-12">
+            <?php echo Progress::widget([
+                'percent' => 60,
+                'label' => 'test',
+                'options' => ['class' => 'active progress-striped'],
+            ]); ?>
+        </div>
     </div>
 
 </div>

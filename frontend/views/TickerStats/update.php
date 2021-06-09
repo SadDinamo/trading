@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\TickerStats */
 
-$this->title = 'Update Ticker Stats: ' . $model->name;
+$this->title = 'Update Ticker Stats: ' . $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Ticker Stats', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="ticker-stats-update">

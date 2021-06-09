@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\TickerStats */
 
-$this->title = $model->name;
+$this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Ticker Stats', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -31,9 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'ticker',
-            'name',
+            'short_ratio',
+            'short_percent_of_float',
+            'ebitda',
+            'total_cash',
+            'total_debt',
+            'operating_cash_flow',
             'date',
-            'value',
         ],
     ]) ?>
 
